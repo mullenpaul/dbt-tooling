@@ -19,10 +19,14 @@ if __name__ == '__main__':
     result: Manifest = dbt_helpers.get_manifest(target_folder)
 
     models = dbt_helpers.get_node_type(result.nodes, ModelNode)
+
+    sources = result.sources
+
     print("models")
     for i in models:
         print(i.name)
     n1 = result.nodes["model.jaffle_shop.stg_payments"]
+    print(n1.node_info["unique_id"])
     print(n1.depends_on)
 
     singular_tests = dbt_helpers.get_node_type(result.nodes, SingularTestNode)
