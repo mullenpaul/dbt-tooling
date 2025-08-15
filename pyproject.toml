@@ -12,7 +12,8 @@ dependencies = [
     "dbt-snowflake (>=1.10.0,<2.0.0)",
     "dbt-sqlite (>=1.10.0,<2.0.0)",
     "networkx (>=3.5,<4.0)",
-    "plotly (>=6.3.0,<7.0.0)"
+    "plotly (>=6.3.0,<7.0.0)",
+    "matplotlib (>=3.10.5,<4.0.0)"
 ]
 
 

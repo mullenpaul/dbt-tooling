@@ -1,5 +1,5 @@
 import plotly.graph_objects as go
-
+import matplotlib.pyplot as plt
 import networkx as nx
 import random
 from typing import List
@@ -55,10 +55,15 @@ def build_dbt_graph(manifest: Manifest):
         data = [(node.node_info["unique_id"], dep) for dep in node.depends_on_nodes]
         print(data)
         for i in data:
-            di.add_edge(i[0], i[1])
+            di.add_edge(i[1], i[0])
+
+    for layer, nodes in enumerate(nx.topological_generations(di)):
+        for node in nodes:
+            di.nodes[node]["layer"] = layer
+            print(f"{node} - {layer}")
     
     
-    return determine_positions(di)
+    return di
 
 def determine_positions(di):
     y_offset = 0
@@ -178,19 +183,18 @@ def build_graph_figure(di):
     return fig
 
 if __name__ == '__main__':
-    di = nx.DiGraph()
-    di.add_nodes_from([1,2,3])
-    pos = {
-        1: (100, 100),
-        2: (150, 100),
-        3: (100, 150)
-    }
-    di.add_edge(1, 2)
-    di.add_edge(2, 3)
-    nx.set_node_attributes(di, pos, "pos")
     import dbt_helpers
     target_folder = "../jaffle_shop_duckdb"
     man = dbt_helpers.get_manifest(target_folder)
     di = build_dbt_graph(man) #nx.random_geometric_graph(200, 0.125)
-    fig = build_graph_figure(di)
-    fig.show()
+    
+    pos = nx.multipartite_layout(di, subset_key="layer")
+    #pos = nx.forceatlas2_layout(di)
+    fig, ax = plt.subplots()
+    nx.draw_networkx(di, pos=pos, ax=ax)
+    ax.set_title("DAG layout in topological order")
+    fig.tight_layout()
+    plt.show()
+
+    #fig = build_graph_figure(di)
+    #fig.show()
